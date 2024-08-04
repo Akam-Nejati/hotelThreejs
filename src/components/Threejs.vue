@@ -31,6 +31,8 @@ const mouse = shallowRef<THREE.Vector2 | null>(null);
 const roomModel = shallowRef<THREE.Group | null>(null);
 const isMouseOver = ref(false);
 
+const armchairModel = shallowRef<THREE.Group | null>(null);
+
 const body = document.querySelector("body")
 
 const modal = ref<any>()
@@ -128,8 +130,8 @@ onMounted(() => {
         mouse.value = new THREE.Vector2();
 
         // Add click and mousemove event listeners
-        renderer.value.domElement.addEventListener('click', onMouseClick);
-        renderer.value.domElement.addEventListener('mousemove', onMouseMove);
+        renderer.value.domElement.addEventListener('click', clickEventOnRoom);
+        renderer.value.domElement.addEventListener('mousemove', moseMoveEventOnRoom);
 
         async function init() {
             try {
@@ -204,6 +206,19 @@ onMounted(() => {
                     obj2.position.y = 2
                     roomModel.value = obj2;
 
+                    obj2.traverse(item => {
+                        if (item.name === "Text") {
+                            anime({
+                                targets: item.position,
+                                y: 4,
+                                duration: 1000,
+                                direction: 'alternate',
+                                easing: 'easeInOutSine',
+                                loop: true
+                            });
+                        }
+                    })
+
                     // Animate obj2 to grow and appear
                     await anime({
                         targets: obj2.scale,
@@ -213,7 +228,7 @@ onMounted(() => {
                         duration: 1000,
                         easing: 'easeInOutExpo'
                     }).finished;
-                }, 2000);
+                }, 10000);
             } catch (error) {
                 console.error('Error loading models:', error);
             }
@@ -242,33 +257,35 @@ onMounted(() => {
 
 onUnmounted(() => {
     if (renderer.value) {
-        renderer.value.domElement.removeEventListener('click', onMouseClick);
-        renderer.value.domElement.removeEventListener('mousemove', onMouseMove);
+        renderer.value.domElement.removeEventListener('click', clickEventOnRoom);
+        renderer.value.domElement.removeEventListener('mousemove', moseMoveEventOnRoom);
     }
 });
 
-function onMouseClick(event: MouseEvent) {
-    if (!renderer.value || !camera.value || !roomModel.value || !raycaster.value || !mouse.value) return;
+function clickEvent(event: MouseEvent, modal: THREE.Object3D<THREE.Object3DEventMap>) {
+    if (!renderer.value || !camera.value || !modal || !raycaster.value || !mouse.value) return;
     
     const rect = renderer.value!.domElement.getBoundingClientRect();
-    mouse.value!.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.value!.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    mouse.value.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.value.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-    raycaster.value!.setFromCamera(mouse.value!, camera.value!);
+    raycaster.value.setFromCamera(mouse.value, camera.value!);
 
-    const intersects = raycaster.value!.intersectObject(roomModel.value!, true);
+    return raycaster.value.intersectObject(modal, true);
+}
 
-    for (const intersect of intersects) {        
-        // console.log(intersect.object.name);
+function clickEventOnRoom(event: MouseEvent) {
+    const intersects = clickEvent(event, roomModel.value!)
+    
+    for (const intersect of intersects!) {
         if (intersect.object.name === 'Cube003') {
-            handleCube003Click(intersect.object);
-            
+            modal.value.openModal()
             break;
         }
     }
 }
 
-function onMouseMove(event: MouseEvent) {
+function moseMoveEventOnRoom(event: MouseEvent) {
     if (!renderer.value || !camera.value || !roomModel.value || !raycaster.value || !mouse.value) return;
 
     const rect = renderer.value.domElement.getBoundingClientRect();
@@ -297,12 +314,6 @@ function onMouseMove(event: MouseEvent) {
     }
 }
 
-function handleCube003Click(cube: THREE.Object3D) {
-    console.log('Cube003 clicked!');
-
-    modal.value.openModal()
-}
-
 function handleCube003MouseEnter() {
     if (body) {
         body.style.cursor = "pointer"
@@ -317,25 +328,62 @@ function handleCube003MouseLeave() {
 }
 
 async function changeArmchair(path: string) {
+    if (armchairModel.value && armchairModel.value.parent) {
+        armchairModel.value.parent.remove(armchairModel.value);
+        armchairModel.value = null; // Optionally, set the reference to null
+    }
+
     const armchair = await loadModel(
         `../public/models/${path}`,
         new THREE.Vector3(1, 1, 1),
         new THREE.Vector3(0, 0, 0),
         true
     );
+
+    armchairModel.value = armchair
+
+    renderer.value!.domElement.addEventListener('click', clickEventOnArmchair);
+    
     armchair.rotation.y = Math.PI * 1.5
     armchair.position.z = -7
     armchair.position.y = 1.4
     armchair.position.x = 1.2
-    roomModel.value!.add(armchair)
+    scene.value!.add(armchair)
+
+    function removeItem(name: string) {
+        roomModel.value?.children.forEach(item => {
+            if (item.name === name ) {
+                if (item.parent) {
+                    item.parent.remove(item);
+                }
+            }
+        })
+    }
+
+    if (roomModel.value) {
+        removeItem("Text")
+        removeItem("Cube003")
+    }
+
     modal.value.closeModal()
+}
+
+function clickEventOnArmchair(event: MouseEvent) {
+    console.log("hello");
+    
+    const intersects = clickEvent(event, armchairModel.value!)
+
+    console.log(intersects);
+
+    if (intersects?.length !== 0) {
+        modal.value.openModal()
+    }
+
 }
 </script>
 
 <style>
 .renderer-container {
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
+    @apply w-full md:h-dvh h-[50dvh] overflow-hidden
 }
 </style>
