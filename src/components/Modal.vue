@@ -2,7 +2,7 @@
     <transition name="modal">
         <div v-if="isOpen" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
             @click="closeModal">
-            <div class="bg-[#cb997e] text-[#ddbea9] p-5 rounded-lg shadow-lg w-11/12 max-w-md relative" @click.stop>
+            <div class="bg-blue-400 text-blue-300 p-5 rounded-lg shadow-lg w-11/12 max-w-md relative" @click.stop>
                 <div class="flex items-center justify-between">
                     <button class="absolute top-3 right-3 text-4xl translate-y-1"
                         @click="closeModal">&times;</button>

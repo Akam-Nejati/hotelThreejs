@@ -1,2 +1,7 @@
 @tailwind base;
 @tailwind utilities;
+
+
+.btn {
+    @apply lg:px-12 lg:py-4 px-6 py-3 lg:text-lg text-sm rounded-2xl shadow-sm font-bold cursor-pointer select-none transition-all hover:scale-105 hover:shadow-2xl
+}

@@ -5,14 +5,17 @@
             <h2 class="drop-shadow-2xl text-2xl font-extrabold">Armchairs</h2>
         </template>
         <div class="grid grid-cols-3 gap-2 mt-4">
-            <div v-for="armchair in armchairs" class="p-4 bg-[#ddbea9] rounded-xl shadow-xl" @click="changeArmchair(armchair.path)">
-                <img :src="`../../public/image/${armchair.image}`" class="drop-shadow-xl" :alt="armchair.name">
+            <div v-for="armchair in armchairs" class="p-4 bg-blue-300 rounded-xl shadow-xl overflow-hidden cursor-pointer"
+                @click="changeArmchair(armchair.path)">
+                <img :src="`../../public/image/${armchair.image}`" :class="{ 'scale-150': armchair.name === 'armchair2' }"
+                    class="drop-shadow-xl w-full h-full object-cover object-center" :alt="armchair.name">
             </div>
         </div>
     </Modal>
 </template>
 
 <script setup lang="ts">
+import {loadingProgress, loadingShow} from '../stores/loadingProgress';
 import { onMounted, onUnmounted, ref, shallowRef } from 'vue';
 import Modal from "./Modal.vue"
 import * as THREE from 'three';
@@ -37,7 +40,11 @@ const body = document.querySelector("body")
 
 const modal = ref<any>()
 
-const armchairs: {name: string, path: string, image:string}[] = [
+defineExpose({
+    modal
+})
+
+const armchairs: { name: string, path: string, image: string }[] = [
     {
         name: "armchair1",
         path: "armchair1.glb",
@@ -74,7 +81,13 @@ async function loadModel(path: string, initialScale: THREE.Vector3, initialPosit
             }
 
             resolve(model);
-        }, undefined, (error) => {
+        }, (xhr) => {
+            // Update the progress bar based on loading progress
+            loadingProgress.value = Math.round((xhr.loaded / xhr.total) * 100);
+            if (loadingProgress.value === 100) {
+                loadingProgress.value = 0
+            }
+        }, (error) => {
             reject(error);
         });
     });
@@ -84,17 +97,18 @@ onMounted(() => {
     if (rendererContainer.value) {
         // Scene setup
         scene.value = new THREE.Scene();
-        scene.value.background = new THREE.Color("#6b705c");
+        scene.value.background = new THREE.Color("#fff");
 
         // Camera setup
-        camera.value = new THREE.PerspectiveCamera(75, rendererContainer.value.clientWidth / rendererContainer.value.clientHeight, 0.1, 1000);
+        camera.value = new THREE.PerspectiveCamera(40, rendererContainer.value.clientWidth / rendererContainer.value.clientHeight, 0.1, 1000);
         camera.value.position.set(30, 30, 30);
 
         // Renderer setup
-        renderer.value = new THREE.WebGLRenderer({ antialias: true });
+        renderer.value = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
         renderer.value.setSize(rendererContainer.value.clientWidth, rendererContainer.value.clientHeight);
         rendererContainer.value.appendChild(renderer.value.domElement);
         renderer.value.shadowMap.enabled = true;
+        renderer.value.shadowMap.type = THREE.PCFSoftShadowMap; // Use PCFSoftShadowMap for smooth shadows
 
         // Light setup
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
@@ -105,12 +119,14 @@ onMounted(() => {
         directionalLight.castShadow = true;
         directionalLight.shadow.mapSize.width = 2048;
         directionalLight.shadow.mapSize.height = 2048;
-        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.near = 1;
         directionalLight.shadow.camera.far = 500;
-        directionalLight.shadow.camera.left = -100;
-        directionalLight.shadow.camera.right = 100;
-        directionalLight.shadow.camera.top = 100;
-        directionalLight.shadow.camera.bottom = -100;
+        directionalLight.shadow.camera.top = 50;
+        directionalLight.shadow.camera.bottom = -50;
+        directionalLight.shadow.camera.left = -50;
+        directionalLight.shadow.camera.right = 50;
+        directionalLight.shadow.bias = -0.001;
+        directionalLight.shadow.radius = 2; // Increase the shadow radius to blur the edges
         scene.value.add(directionalLight);
 
         // Plane to receive shadows
@@ -135,6 +151,8 @@ onMounted(() => {
 
         async function init() {
             try {
+                loadingShow.value = true
+                
                 const obj1 = await loadModel(
                     "../public/models/armchair1.glb",
                     new THREE.Vector3(0.01, 0.01, 0.01),
@@ -142,12 +160,23 @@ onMounted(() => {
                     false
                 );
 
+                // Load and animate obj2 (room model)
+                const obj2 = await loadModel(
+                    "../public/models/room - Copy.glb",
+                    new THREE.Vector3(0.01, 0.01, 0.01),
+                    new THREE.Vector3(0, 0, 0),
+                    true
+                );
+                
+                loadingShow.value = false
+                
+
                 // Animate obj1 to appear
                 await anime({
                     targets: obj1.scale,
-                    x: 4,
-                    y: 4,
-                    z: 4,
+                    x: 3,
+                    y: 3,
+                    z: 3,
                     duration: 1000,
                     easing: 'easeInOutExpo'
                 }).finished;
@@ -195,30 +224,15 @@ onMounted(() => {
                         }
                     }).finished;
 
-                    // Load and animate obj2 (room model)
-                    const obj2 = await loadModel(
-                        "../public/models/room - Copy.glb",
-                        new THREE.Vector3(0.01, 0.01, 0.01),
-                        new THREE.Vector3(0, 0, 0),
-                        true
-                    );
-
                     obj2.position.y = 2
                     roomModel.value = obj2;
 
+
                     obj2.traverse(item => {
                         if (item.name === "Text") {
-                            anime({
-                                targets: item.position,
-                                y: 4,
-                                duration: 1000,
-                                direction: 'alternate',
-                                easing: 'easeInOutSine',
-                                loop: true
-                            });
+                            item.position.y = .05
                         }
                     })
-
                     // Animate obj2 to grow and appear
                     await anime({
                         targets: obj2.scale,
@@ -264,7 +278,7 @@ onUnmounted(() => {
 
 function clickEvent(event: MouseEvent, modal: THREE.Object3D<THREE.Object3DEventMap>) {
     if (!renderer.value || !camera.value || !modal || !raycaster.value || !mouse.value) return;
-    
+
     const rect = renderer.value!.domElement.getBoundingClientRect();
     mouse.value.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.value.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -276,7 +290,7 @@ function clickEvent(event: MouseEvent, modal: THREE.Object3D<THREE.Object3DEvent
 
 function clickEventOnRoom(event: MouseEvent) {
     const intersects = clickEvent(event, roomModel.value!)
-    
+
     for (const intersect of intersects!) {
         if (intersect.object.name === 'Cube003') {
             modal.value.openModal()
@@ -333,6 +347,8 @@ async function changeArmchair(path: string) {
         armchairModel.value = null; // Optionally, set the reference to null
     }
 
+    loadingShow.value = true
+    
     const armchair = await loadModel(
         `../public/models/${path}`,
         new THREE.Vector3(1, 1, 1),
@@ -340,19 +356,30 @@ async function changeArmchair(path: string) {
         true
     );
 
+    loadingShow.value = false
+
     armchairModel.value = armchair
 
     renderer.value!.domElement.addEventListener('click', clickEventOnArmchair);
-    
-    armchair.rotation.y = Math.PI * 1.5
-    armchair.position.z = -7
-    armchair.position.y = 1.4
-    armchair.position.x = 1.2
+
+    if (path === "armchair1.glb") {
+        armchair.rotation.y = Math.PI * 1.5
+        armchair.position.z = -6
+        armchair.position.y = 1.4
+        armchair.position.x = .8
+    } else if (path === "armchair2.glb"){
+        armchair.rotation.y = Math.PI * 1.5
+        armchair.position.z = -7
+        armchair.position.x = 4.8
+        armchair.position.y = .8
+    }
+
+
     scene.value!.add(armchair)
 
     function removeItem(name: string) {
         roomModel.value?.children.forEach(item => {
-            if (item.name === name ) {
+            if (item.name === name) {
                 if (item.parent) {
                     item.parent.remove(item);
                 }
@@ -370,7 +397,7 @@ async function changeArmchair(path: string) {
 
 function clickEventOnArmchair(event: MouseEvent) {
     console.log("hello");
-    
+
     const intersects = clickEvent(event, armchairModel.value!)
 
     console.log(intersects);
@@ -384,6 +411,6 @@ function clickEventOnArmchair(event: MouseEvent) {
 
 <style>
 .renderer-container {
-    @apply w-full md:h-dvh h-[50dvh] overflow-hidden
+    @apply w-full h-full overflow-hidden
 }
 </style>
