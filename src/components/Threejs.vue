@@ -7,7 +7,7 @@
         <div class="grid grid-cols-3 gap-2 mt-4">
             <div v-for="armchair in armchairs" class="p-4 bg-blue-300 rounded-xl shadow-xl overflow-hidden cursor-pointer"
                 @click="changeArmchair(armchair.path)">
-                <img :src="`../../public/image/${armchair.image}`" :class="{ 'scale-150': armchair.name === 'armchair2' }"
+                <img :src="`/image/${armchair.image}`" :class="{ 'scale-150': armchair.name === 'armchair2' }"
                     class="drop-shadow-xl w-full h-full object-cover object-center" :alt="armchair.name">
             </div>
         </div>
@@ -154,7 +154,7 @@ onMounted(() => {
                 loadingShow.value = true
                 
                 const obj1 = await loadModel(
-                    "../public/models/armchair1.glb",
+                    "/models/armchair1.glb",
                     new THREE.Vector3(0.01, 0.01, 0.01),
                     new THREE.Vector3(0, 0, 0),
                     false
@@ -162,7 +162,7 @@ onMounted(() => {
 
                 // Load and animate obj2 (room model)
                 const obj2 = await loadModel(
-                    "../public/models/room - Copy.glb",
+                    "/models/room - Copy.glb",
                     new THREE.Vector3(0.01, 0.01, 0.01),
                     new THREE.Vector3(0, 0, 0),
                     true
@@ -350,7 +350,7 @@ async function changeArmchair(path: string) {
     loadingShow.value = true
     
     const armchair = await loadModel(
-        `../public/models/${path}`,
+        `/models/${path}`,
         new THREE.Vector3(1, 1, 1),
         new THREE.Vector3(0, 0, 0),
         true
