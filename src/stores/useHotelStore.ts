@@ -4,7 +4,7 @@ import * as THREE from "three"
 import { GLTF } from "three/examples/jsm/Addons.js";
 import { useAnimateStore } from "./useAnimateStore";
 import { useOrbitControlsStore } from "./useOrbitControlsStore";
-import { shallowRef, toRefs, watch } from "vue";
+import { shallowRef, toRefs } from "vue";
 import { useCurrentModel } from "./useCurrentModelStore";
 import { useRoomStore } from "./useRoomStore";
 

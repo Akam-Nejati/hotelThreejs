@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Landing from "./components/Landing.vue"
-import { onMounted, toRefs } from 'vue';
+import { toRefs } from 'vue';
 import { useLoadingStore } from "./stores/useLoadingProgressStore";
 import Loading from "./components/Loading.vue";
 
