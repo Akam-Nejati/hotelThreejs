@@ -1,7 +1,24 @@
 <script setup lang="ts">
 import Landing from "./components/Landing.vue"
+import { onMounted, toRefs } from 'vue';
+import { useLoadingStore } from "./stores/useLoadingProgressStore";
 import Loading from "./components/Loading.vue";
-import {loadingShow} from "./stores/loadingProgress";
+
+const { loadingShow } = toRefs(useLoadingStore())
+
+// onMounted(async () => {
+//     if ('serviceWorker' in navigator) {
+//         window.addEventListener('load', () => {
+//             navigator.serviceWorker.register('/service-worker.js')
+//                 .then(registration => {
+//                     console.log('Service Worker registered:', registration);
+//                 })
+//                 .catch(error => {
+//                     console.log('Service Worker registration failed:', error);
+//                 });
+//         });
+//     }
+// })
 </script>
 
 <template>
@@ -12,3 +29,7 @@ import {loadingShow} from "./stores/loadingProgress";
         <Landing />
     </div>
 </template>
+
+<style>
+
+</style>

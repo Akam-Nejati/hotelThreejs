@@ -1,64 +1,125 @@
-<script setup lang="ts">
-import { AutoTyperVue } from "auto-typer-vue3";
+<script setup>
 import Threejs from "./Threejs.vue"
-import { onMounted, ref } from "vue";
 
-const titleText = [
-    'This is a demo of our armchairs',
-    'Welcome to our site ⁕',
-    'Lets try armchairs in real environment'
-];
-
-const startText = [
-    'For start choose an armchaire with click in choose button'
-]
-
-const isChooseBtnShow = ref<boolean>(false)
-
-onMounted(() => {
-    setTimeout(() => {
-        isChooseBtnShow.value = true
-    }, 19000)
-})
-const threejs = ref<any>()
-
-
-function openSelectModal() {
-    threejs.value.modal.openModal()
-}
 </script>
 
 <template>
-    <div class="h-[calc(100%-7.5rem)] grid xl:grid-cols-5 grid-cols-6 grid-rows-6">
-        <div
-            class="xl:col-span-2 lg:col-span-3 col-span-6 lg:order-1 order-2 lg:row-span-6 row-span-3 lg:px-24 px-12 flex flex-col justify-center gap-8">
-            <div>
-                <small class="tip">NEW FEATURES</small>
+    <!-- Main Banner -->
+    <section class="container mx-auto my-12">
+        <div class="flex flex-col gap-8 lg:flex-row-reverse items-center">
+            <div class="lg:w-1/2 w-full mb-8 lg:mb-0">
+                <Threejs />
+                <!-- <img src="../assets/img/hotel-banner.png" alt="Hotel" class="rounded-lg w-full" /> -->
             </div>
-            <div class="h-fit">
-                <AutoTyperVue :typingDelay="100" :deletingDelay="100" componentTag="h6" :text="titleText"
-                    :repeat="false"
-                    class="text-slate-900 lg:text-6xl text-[7vw] font-bold drop-shadow-xl" />
+            <div class="lg:w-1/2 text-right">
+                <h3 class="text-2xl font-bold mb-4 text-slate-300">آرامش و لحظات به یاد ماندنی را در هتل المپیک
+                    تجربه کنید.
+                </h3>
+                <p class="mb-4 text-justify text-slate-300">
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک
+                    است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی
+                    تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی
+                    در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم
+                    افزارها شناخت بیشتری را برای طراحان رایانه ای علی الخصوص طراحان خلاقی، و فرهنگ پیشرو در زبان
+                    فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و
+                    شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات
+                    پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
+                </p>
             </div>
-            <div>
-                <AutoTyperVue :startDelay="17000" :typingDelay="100" :deletingDelay="100" componentTag="span"
-                    :text="startText" :repeat="false"
-                    class="text-slate-500 lg:text-[1vw] text-[3vw] font-bold drop-shadow-xl" />
+        </div>
+    </section>
+
+    <!-- Suite Booking Section -->
+    <section class="container mx-auto my-12">
+        <h2 class="text-2xl font-bold text-[#f0c419] mb-8 text-right">رزرو سوئیت‌های ما</h2>
+        <p class="text-right mb-8 font-bold text-lg text-slate-300">لورم ایپسوم متن ساختگی با تولید سادگی
+            نامفهوم از صنعت چاپ و با استفاده از
+            طراحان
+            گرافیک است</p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-[#2c2e30] h-fit text-black rounded-3xl shadow-xl overflow-hidden">
+                <img src="../assets/img/hotel-banner.png" alt="Suite Royal" class="w-full" />
+                <div class="p-4">
+                    <div class="flex justify-between items-center">
+                        <h5 class="font-bold mb-2 text-slate-300 drop-shadow-xl">لورم ایپسوم متن</h5>
+
+                        <div class="rating">
+                            <span class="text-yellow-400">☆</span>
+                            <span class="text-yellow-400">★</span>
+                            <span class="text-yellow-400">★</span>
+                            <span class="text-yellow-400">★</span>
+                            <span class="text-yellow-400">★</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <h5 class="text-slate-300">سوئیت رویال</h5>
+                        <p class="text-slate-300"> $200 یک شب</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <div @click="openSelectModal()" :class="{'opacity-100': isChooseBtnShow}" class="opacity-0 btn bg-blue-500 text-white w-fit">
-                    Choose
+            <div class="bg-[#2c2e30] h-fit text-black rounded-3xl shadow-xl overflow-hidden">
+                <img src="../assets/img/hotel-banner.png" alt="Suite Deluxe" class="w-full" />
+                <div class="p-4">
+                    <div class="flex justify-between items-center">
+                        <h5 class="font-bold mb-2 text-slate-300 drop-shadow-xl">لورم ایپسوم متن</h5>
+
+                        <div class="rating">
+                            <span class="text-yellow-400">☆</span>
+                            <span class="text-yellow-400">★</span>
+                            <span class="text-yellow-400">★</span>
+                            <span class="text-yellow-400">★</span>
+                            <span class="text-yellow-400">★</span>
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-between items-center">
+                        <h5 class="text-slate-300">سوئیت رویال</h5>
+                        <p class="text-slate-300"> $200 یک شب</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="xl:col-span-3 lg:col-span-3 col-span-6 lg:order-2 order-1  lg:row-span-6 row-span-3">
-            <Threejs ref="threejs"/>
+    </section>
+
+    <!-- Memorable Stay Section -->
+    <section class="container mx-auto my-12">
+        <div class="bg-[#2c2e30] text-slate-300 rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+            <img src="../assets/img/hotel-banner.png" alt="Memorable Stay" class="md:w-1/2 object-cover" />
+            <div class="md:w-1/2 p-8 flex flex-col justify-center">
+                <h3 class="text-2xl font-bold mb-4 text-right">لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از
+                    صنعت
+                </h3>
+                <p class="mb-4 text-right">
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک
+                    است،
+                    چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است...
+                </p>
+                <a href="#"
+                    class="bg-[#f0c419] text-black py-2 px-4 rounded hover:bg-[#e0b716] transition duration-300 self-start">اینجا
+                    جستجو کنید</a>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Additional Section -->
+    <section class="container mx-auto my-12">
+        <div class="flex flex-col lg:flex-row">
+            <div class="lg:w-1/2 mb-8 lg:mb-0">
+                <img src="../assets/img/Group 11214.png" alt="Suite Royal"
+                    class="w-full h-full object-cover rounded-lg" />
+            </div>
+            <div class="lg:w-1/2 bg-[#2c2e30] text-slate-300 rounded-3xl shadow-xl p-8">
+                <h5 class="text-xl font-bold mb-4 text-right">لورم ایپسوم متن</h5>
+                <p class="mb-4 text-right">
+                    لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک
+                    است،
+                    چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است...
+                </p>
+                <a href="#"
+                    class="bg-[#f0c419] text-black py-2 px-4 rounded hover:bg-[#e0b716] transition duration-300 block w-max">اینجا
+                    جستجو کنید</a>
+            </div>
+        </div>
+    </section>
 </template>
 
-<style scoped>
-    .tip{
-        @apply px-4 py-2 bg-pink-200 rounded-full text-blue-500 font-bold
-    }
-</style>
+<style scoped></style>
