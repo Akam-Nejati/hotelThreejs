@@ -24,7 +24,7 @@ export const useHotelStore = defineStore("hotel", () => {
             try {
                 cleanupRoom();
 
-                const glb = await loadModel(scene, "hotel.glb")
+                const glb = await loadModel(scene, "/hotel.glb")
 
 
                 const { setAnimate } = useAnimateStore()

@@ -20,7 +20,7 @@ export const useRoomStore = defineStore("room", () => {
         changeStatusOfControls(false)
         
         try {
-            const glb = await loadModel(scene, 'room-1-1.glb')
+            const glb = await loadModel(scene, '/room-1-1.glb')
 
             const canJump = ref(true);
             const { setAnimate, stopAnimate } = useAnimateStore()
