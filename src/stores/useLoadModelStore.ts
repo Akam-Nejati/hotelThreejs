@@ -3,10 +3,10 @@ import { GLTF, GLTFLoader } from "three/examples/jsm/Addons.js";
 import * as THREE from 'three';
 import { useLoadingStore } from "./useLoadingProgressStore";
 import { toRefs } from "vue";
-import { useCacheModel } from './useCacheModel'; // Import the caching logic
+// import { useCacheModel } from './useCacheModel'; // Import the caching logic
 
 export const useLoadModelStore = defineStore("load model", () => {
-    const { downloadAndCacheModel } = useCacheModel(); // Access the caching method
+    // const { downloadAndCacheModel } = useCacheModel(); // Access the caching method
 
     function loadModel(scene: THREE.Scene, path: string): Promise<GLTF> {
         return new Promise(async (resolve, reject) => {
